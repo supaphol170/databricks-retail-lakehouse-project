@@ -27,7 +27,7 @@ This project demonstrates a real-world **Data Analytics** workflow using the **D
 ## 📜 Credits & License
 This project is based on the **Databricks Data Lakehouse Project** by **Data With Baraa**.
 * **Dataset:** MIT License
-* **Original Course:* **Original Course:** [Data With Baraa Bootcamp](https://www.notion.so/Databricks-Bootcamp-2eee05d4aa8a818f8f76ca07df78153a)
+* **Original Course**:* [Data With Baraa Bootcamp](https://www.notion.so/Databricks-Bootcamp-2eee05d4aa8a818f8f76ca07df78153a)
 
 ---
 *Created by Supaphol as part of a Data Analytics Portfolio.*
