@@ -22,7 +22,7 @@ This project demonstrates a real-world **Data Analytics** workflow using the **D
 ## 📷 Screenshots
 ![images](images/sales_kpi.png)
 ![images](images/sales-product-over-time.png)
-![images](sales-monthly-revenue.png)
+![images](images/sales-monthly-revenue.png)
 
 ## 📜 Credits & License
 This project is based on the **Databricks Data Lakehouse Project** by **Data With Baraa**.
