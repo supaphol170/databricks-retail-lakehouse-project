@@ -1,0 +1,2015 @@
+{
+  "datasets": [
+    {
+      "name": "903453bc",
+      "displayName": "total_sales_each_month",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `salesdb`;\n",
+        "\n",
+        "SELECT date_trunc('month', order_date)::DATE AS order_dates,\n",
+        "  SUM(price) AS total_sales\n",
+        "FROM workspace.salesdb.dim_products\n",
+        "JOIN workspace.salesdb.fact_sales ON\n",
+        "  dim_products.product_key = fact_sales.product_key\n",
+        "GROUP BY 1\n",
+        "ORDER BY 1;"
+      ]
+    },
+    {
+      "name": "46e6f6b7",
+      "displayName": "Total_Profit_Each_month",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `default`;\n",
+        "\n",
+        "--This question told total profit each by by data story by sales_amount is total_price & price is price that products per piece\n",
+        "SELECT *,\n",
+        "  CONCAT(ROUND((total_profit/total_cost)*100,2), ' %') AS percentage\n",
+        "FROM(\n",
+        "  SELECT date_trunc('month', order_date)::DATE AS order_dates,\n",
+        "    SUM(sales_amount) AS total_prices,\n",
+        "    SUM(quantity * cost) AS total_cost,\n",
+        "    (SUM(sales_amount) - SUM(quantity * cost)) AS total_profit\n",
+        "  FROM workspace.salesdb.fact_sales\n",
+        "  JOIN workspace.salesdb.dim_products ON  \n",
+        "    dim_products.product_key = fact_sales.product_key\n",
+        "  GROUP BY 1\n",
+        ") t\n",
+        "ORDER BY order_dates"
+      ]
+    },
+    {
+      "name": "d0ee4799",
+      "displayName": "Total_Quantity_each_month",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `salesdb`;\n",
+        "\n",
+        "--This query for show total quantity as sold each month by not include order_Date if null\n",
+        "SELECT date_trunc('month', order_date)::DATE AS order_dates,\n",
+        "  SUM(quantity) AS Total_quantity\n",
+        "FROM fact_sales\n",
+        "WHERE order_date IS NOT NULL\n",
+        "GROUP BY 1\n",
+        "ORDER BY 1;"
+      ]
+    },
+    {
+      "name": "5e5cdc02",
+      "displayName": "Total_Sales_by_Category",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `default`;\n",
+        "\n",
+        "--This query wanna show total_Sales by category\n",
+        "SELECT category,\n",
+        "  SUM(sales_amount) AS total_Sales_by_category\n",
+        "FROM workspace.salesdb.fact_sales\n",
+        "JOIN workspace.salesdb.dim_products ON  \n",
+        "  dim_products.product_key = fact_sales.product_key\n",
+        "GROUP BY category\n",
+        "ORDER BY 2 DESC;"
+      ]
+    },
+    {
+      "name": "bea9cd13",
+      "displayName": "Total_Sales",
+      "queryLines": [
+        "USE CATALOG `workspace`;\r\n",
+        "USE SCHEMA `salesdb`;\r\n",
+        "\r\n",
+        "--This Query to show total sold all \r\n",
+        "SELECT SUM(price) AS total_sales\r\n",
+        "FROM workspace.salesdb.fact_sales\r\n",
+        "ORDER BY 1;"
+      ],
+      "catalog": "workspace",
+      "schema": "salesdb"
+    },
+    {
+      "name": "6995a0c7",
+      "displayName": "Total_Profits",
+      "queryLines": [
+        "USE CATALOG `workspace`;\r\n",
+        "USE SCHEMA `default`;\r\n",
+        "\r\n",
+        "--This question told total profit each by by data story by sales_amount is total_price & price is price that products per piece\r\n",
+        "SELECT SUM(sales_amount) AS total_prices,\r\n",
+        "  SUM(quantity * cost) AS total_cost,\r\n",
+        "  (SUM(sales_amount) - SUM(quantity * cost)) AS total_profit\r\n",
+        "FROM workspace.salesdb.fact_sales\r\n",
+        "JOIN workspace.salesdb.dim_products ON  \r\n",
+        "  dim_products.product_key = fact_sales.product_key"
+      ],
+      "catalog": "workspace",
+      "schema": "salesdb"
+    },
+    {
+      "name": "913ccf28",
+      "displayName": "Total_Quantity",
+      "queryLines": [
+        "USE CATALOG `workspace`;\r\n",
+        "USE SCHEMA `salesdb`;\r\n",
+        "\r\n",
+        "--This query for show total quantity as sold each month by not include order_Date if null\r\n",
+        "SELECT SUM(quantity) AS Total_quantity\r\n",
+        "FROM fact_sales\r\n",
+        "WHERE order_date IS NOT NULL;"
+      ]
+    },
+    {
+      "name": "4cbae8d8",
+      "displayName": "Number of orders by customer age group",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `default`;\n",
+        "\n",
+        "--This query show about Number of orders by customer age group\n",
+        "--This query show about Number of orders by customer age group\n",
+        "SELECT \n",
+        "  CASE\n",
+        "    WHEN date_diff(year, birthdate, current_date()) < 20 THEN 'Under 20'\n",
+        "    WHEN date_diff(year, birthdate, current_date()) BETWEEN 20 AND 30 THEN '20-30'\n",
+        "    WHEN date_diff(year, birthdate, current_date()) BETWEEN 30 AND 40 THEN '30-40'\n",
+        "    WHEN date_diff(year, birthdate, current_date()) BETWEEN 40 AND 50 THEN '40-50'\n",
+        "    WHEN date_diff(year, birthdate, current_date()) BETWEEN 50 AND 60 THEN '50-60'\n",
+        "    ELSE '60+'\n",
+        "    END AS age_group,\n",
+        "  COUNT(DISTINCT order_number) AS number_of_orders\n",
+        "FROM workspace.salesdb.dim_customers\n",
+        "JOIN workspace.salesdb.fact_sales ON\n",
+        "  fact_sales.customer_key = dim_customers.customer_key\n",
+        "GROUP BY 1\n",
+        "ORDER BY 1;"
+      ]
+    },
+    {
+      "name": "580e4ce2",
+      "displayName": "Top 10 customers by sales",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `default`;\n",
+        "\n",
+        "--This query wanna show Top 10 customer by sales, that's mean most top 10 users as bought\n",
+        "SELECT customer_number,\n",
+        "  SUM(sales_amount) AS total_sales\n",
+        "FROM workspace.salesdb.dim_customers\n",
+        "JOIN workspace.salesdb.fact_sales ON\n",
+        "  workspace.salesdb.dim_customers.customer_key = workspace.salesdb.fact_sales.customer_key\n",
+        "GROUP BY 1\n",
+        "ORDER BY 2 DESC\n",
+        "LIMIT 10;"
+      ]
+    },
+    {
+      "name": "1b96f680",
+      "displayName": "Total number of orders",
+      "queryLines": [
+        "USE CATALOG `workspace`;\r\n",
+        "USE SCHEMA `salesdb`;\r\n",
+        "\r\n",
+        "--This query to show Total number of orders\r\n",
+        "SELECT COUNT(DISTINCT order_number)\r\n",
+        "FROM workspace.salesdb.fact_sales;"
+      ],
+      "catalog": "workspace",
+      "schema": "salesdb"
+    },
+    {
+      "name": "c114f7e0",
+      "displayName": "Average sales per customer",
+      "queryLines": [
+        "USE CATALOG `workspace`;\r\n",
+        "USE SCHEMA `salesdb`;\r\n",
+        "\r\n",
+        "--This query to show avg_sales_per_customer\r\n",
+        "SELECT CONCAT('$ ', ROUND(SUM(sales_amount)/COUNT(DISTINCT customer_key),1)) AS avg_sales\r\n",
+        "FROM workspace.salesdb.fact_sales;"
+      ],
+      "catalog": "workspace",
+      "schema": "salesdb"
+    },
+    {
+      "name": "847a6b46",
+      "displayName": "Total number of customers",
+      "queryLines": [
+        "USE CATALOG `workspace`;\r\n",
+        "USE SCHEMA `salesdb`;\r\n",
+        "\r\n",
+        "--This query to show total number of customer\r\n",
+        "SELECT COUNT(customer_id) AS total_numbers_of_customer\r\n",
+        "FROM workspace.salesdb.dim_customers;"
+      ],
+      "catalog": "workspace",
+      "schema": "salesdb"
+    },
+    {
+      "name": "916fbf33",
+      "displayName": "Customer Segmentation by Spending",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `salesdb`;\n",
+        "\n",
+        "--this query for seperate customer group by spending by we assume \n",
+        "--if our customer spent more than 4000$ -> VIP PLATINUM\n",
+        "--if our customer spent between 3000$ - 3999$ -> VIP GOLD\n",
+        "--if our customer spent between 2000$ - 2999$ -> VIP SILVER\n",
+        "--if our customer spent between 1000$ - 1999$ -> VIP BRONZE\n",
+        "--if our customer spent less than 1000$ -> STANDARD\n",
+        "--and show how many customer in each group\n",
+        "SELECT customer_tier,\n",
+        "  COUNT(customer_number) AS number_of_customer\n",
+        "FROM (\n",
+        "  SELECT customer_number,\n",
+        "    SUM(sales_amount) AS Total_Spent,\n",
+        "    CASE\n",
+        "      WHEN SUM(sales_amount) >= 4000 THEN 'VIP PLATINUM'\n",
+        "      WHEN SUM(sales_amount) BETWEEN 3000 AND 3999 THEN 'VIP GOLD'\n",
+        "      WHEN SUM(sales_amount) BETWEEN 2000 AND 2999 THEN 'VIP SILVER'\n",
+        "      ELSE 'VIP BRONZE'\n",
+        "    END AS customer_tier\n",
+        "  FROM workspace.salesdb.dim_customers\n",
+        "  JOIN workspace.salesdb.fact_sales ON\n",
+        "    workspace.salesdb.dim_customers.customer_key = workspace.salesdb.fact_sales.customer_key\n",
+        "  GROUP BY 1\n",
+        ")\n",
+        "GROUP BY 1\n",
+        "ORDER BY \n",
+        "  CASE\n",
+        "    WHEN customer_tier = 'VIP PLATINUM' THEN 1\n",
+        "    WHEN customer_tier = 'VIP GOLD' THEN 2\n",
+        "    WHEN customer_tier = 'VIP SILVER' THEN 3\n",
+        "    ELSE 4\n",
+        "  END DESC"
+      ],
+      "catalog": "workspace",
+      "schema": "salesdb"
+    },
+    {
+      "name": "3b3b8d6e",
+      "displayName": "Highest Country Sales",
+      "queryLines": [
+        "USE CATALOG `workspace`;\n",
+        "USE SCHEMA `default`;\n",
+        "\n",
+        "--This query is show country product sales \n",
+        "SELECT country,\n",
+        "  SUM(sales_amount) AS total_sales\n",
+        "FROM workspace.salesdb.dim_customers\n",
+        "JOIN workspace.salesdb.fact_sales ON\n",
+        "  workspace.salesdb.fact_sales.customer_key = workspace.salesdb.dim_customers.customer_key\n",
+        "WHERE country != 'n/a'\n",
+        "GROUP BY 1;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "f155dc73",
+      "displayName": "Sales DashBoard",
+      "layout": [
+        {
+          "widget": {
+            "name": "c79e6eac",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "903453bc",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "total_sales",
+                      "expression": "`total_sales`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "order_dates",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "total_sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "title": "Monthly Sales Trend",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "e4e0c180",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 36px;line-height: 1.5;\">**Sales DashBoard**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#3D358A"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "filter-month",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f90d734f11f7a5322ff847b994be_order_dates",
+                "query": {
+                  "datasetName": "903453bc",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "order_dates_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "order_dates",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f90d734f11f7a5322ff847b994be_order_dates"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Sales Filter",
+                "showDescription": false
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#022B4F"
+              },
+              "widgetBorderColor": {
+                "dark": "#FEFEFE"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "acf44788",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "46e6f6b7",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "total_prices",
+                      "expression": "`total_prices`"
+                    },
+                    {
+                      "name": "total_cost",
+                      "expression": "`total_cost`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "order_dates",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fields": [
+                    {
+                      "fieldName": "total_prices"
+                    },
+                    {
+                      "fieldName": "total_cost"
+                    }
+                  ],
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Revenue vs Cost Trend",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 7,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "768a59e0",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9be1cb8159bb19f36d6ea312c44_order_dates",
+                "query": {
+                  "datasetName": "46e6f6b7",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "order_dates_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "order_dates",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9be1cb8159bb19f36d6ea312c44_order_dates"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Profit Filter"
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#022B4F"
+              },
+              "widgetBorderColor": {
+                "dark": "#F5F9FB"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 6,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "95c269c6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "903453bc",
+                  "fields": [
+                    {
+                      "name": "sum(total_sales)",
+                      "expression": "SUM(`total_sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_sales)"
+                }
+              },
+              "frame": {
+                "showTitle": false
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#94CCFB"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "16120825",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "46e6f6b7",
+                  "fields": [
+                    {
+                      "name": "sum(total_profit)",
+                      "expression": "SUM(`total_profit`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_profit)"
+                }
+              },
+              "frame": {
+                "showTitle": false
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#94CCFB"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 12,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "350c6f4a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d0ee4799",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "sum(Total_quantity)",
+                      "expression": "SUM(`Total_quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "order_dates",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Total_quantity)",
+                  "displayName": "Total_quantity",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Quantity Sold Over Time",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "layer"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "quantity-date-filter",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9c175b6165a842f55ae2087fdac_order_dates",
+                "query": {
+                  "datasetName": "d0ee4799",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "order_dates_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "order_dates",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9c175b6165a842f55ae2087fdac_order_dates"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Quantity Date Filter"
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#022B4F"
+              },
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "28ae6ebb",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d0ee4799",
+                  "fields": [
+                    {
+                      "name": "sum(Total_quantity)",
+                      "expression": "SUM(`Total_quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Total_quantity)"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#94CCFB"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 19,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "1557e31b",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "5e5cdc02",
+                  "fields": [
+                    {
+                      "name": "sum(total_Sales_by_category)",
+                      "expression": "SUM(`total_Sales_by_category`)"
+                    },
+                    {
+                      "name": "category",
+                      "expression": "`category`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(total_Sales_by_category)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "total_Sales_by_category"
+                },
+                "color": {
+                  "fieldName": "category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "mark": {
+                "layout": "stack"
+              },
+              "frame": {
+                "title": "Sales by Product Category",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 14,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "7f3c7116",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "5e5cdc02",
+                  "fields": [
+                    {
+                      "name": "sum(total_Sales_by_category)",
+                      "expression": "SUM(`total_Sales_by_category`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_Sales_by_category)"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#94CCFB"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 19,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "sales-by-category",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9c768db12a38ba0f168bcd7c60e_category",
+                "query": {
+                  "datasetName": "5e5cdc02",
+                  "fields": [
+                    {
+                      "name": "category",
+                      "expression": "`category`"
+                    },
+                    {
+                      "name": "category_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "category",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9c768db12a38ba0f168bcd7c60e_category"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Sales_By_Category"
+              },
+              "style": {
+                "fontColor": {
+                  "dark": "#FFFFFF"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#022B4F"
+              },
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 13,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "23b5ae3f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bea9cd13",
+                  "fields": [
+                    {
+                      "name": "sum(total_sales)",
+                      "expression": "SUM(`total_sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_sales)"
+                }
+              },
+              "style": {
+                "fontColor": {
+                  "dark": "#FFFFFF"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#0305B9"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "9295b31c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "6995a0c7",
+                  "fields": [
+                    {
+                      "name": "sum(total_profit)",
+                      "expression": "SUM(`total_profit`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_profit)"
+                }
+              },
+              "style": {
+                "fontColor": {
+                  "dark": "#FFFFFF"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#0305B9"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 3,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "686316ad",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "913ccf28",
+                  "fields": [
+                    {
+                      "name": "sum(Total_quantity)",
+                      "expression": "SUM(`Total_quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Total_quantity)"
+                }
+              },
+              "style": {
+                "fontColor": {
+                  "dark": "#FFFFFF"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#0305B9"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 3,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "1c0cc656",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 24px;\">**Total Sales**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#025417"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "1612c0f0",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 24px;\">**Total Profit**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#025417"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "ba4c643b",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 24px;\">**Total Quantity**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#025417"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "71632028",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "0dc7fa2e",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f90d734f11f7a5322ff847b994be_order_dates",
+                "query": {
+                  "datasetName": "903453bc",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "order_dates_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9be1cb8159bb19f36d6ea312c44_order_dates",
+                "query": {
+                  "datasetName": "46e6f6b7",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "order_dates_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9c175b6165a842f55ae2087fdac_order_dates",
+                "query": {
+                  "datasetName": "d0ee4799",
+                  "fields": [
+                    {
+                      "name": "order_dates",
+                      "expression": "`order_dates`"
+                    },
+                    {
+                      "name": "order_dates_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "order_dates",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f90d734f11f7a5322ff847b994be_order_dates"
+                  },
+                  {
+                    "fieldName": "order_dates",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9be1cb8159bb19f36d6ea312c44_order_dates"
+                  },
+                  {
+                    "fieldName": "order_dates",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0f9c175b6165a842f55ae2087fdac_order_dates"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "e3ad2014",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0fa818c9716a599bc1b9658611f6a_number_of_orders",
+                "query": {
+                  "datasetName": "4cbae8d8",
+                  "fields": [
+                    {
+                      "name": "number_of_orders",
+                      "expression": "`number_of_orders`"
+                    },
+                    {
+                      "name": "number_of_orders_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "number_of_orders",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0fa818c9716a599bc1b9658611f6a_number_of_orders"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    },
+    {
+      "name": "bafde0b9",
+      "displayName": "Customers DashBoard",
+      "layout": [
+        {
+          "widget": {
+            "name": "77b65589",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4cbae8d8",
+                  "fields": [
+                    {
+                      "name": "age_group",
+                      "expression": "`age_group`"
+                    },
+                    {
+                      "name": "sum(number_of_orders)",
+                      "expression": "SUM(`number_of_orders`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "age_group",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(number_of_orders)",
+                  "displayName": "number_of_orders",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Number of orders by customer age",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  "#BF7080"
+                ],
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "93f55d0e",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block;\"><span style=\"font-size: 36px;line-height: 1.5;\">**Customer DashBoard**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#115F00"
+              },
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "ba59eabd",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "580e4ce2",
+                  "fields": [
+                    {
+                      "name": "total_sales",
+                      "expression": "`total_sales`"
+                    },
+                    {
+                      "name": "customer_number",
+                      "expression": "`customer_number`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "total_sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "customer_number",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "mark": {
+                "layout": "stack"
+              },
+              "frame": {
+                "title": "Top 10 customer by sales",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 8,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "cdbf25c0",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4cbae8d8",
+                  "fields": [
+                    {
+                      "name": "sum(number_of_orders)",
+                      "expression": "SUM(`number_of_orders`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`age_group` IN (`age_group`) OR TRUE"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(number_of_orders)"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "f8061a5a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "580e4ce2",
+                  "fields": [
+                    {
+                      "name": "sum(total_sales)",
+                      "expression": "SUM(`total_sales`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`customer_number` IN (`customer_number`) OR TRUE"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_sales)"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 13,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "number-of-orders-by-customer-age",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0fa818c9716a599bc1b9658611f6a_age_group",
+                "query": {
+                  "datasetName": "4cbae8d8",
+                  "fields": [
+                    {
+                      "name": "age_group",
+                      "expression": "`age_group`"
+                    },
+                    {
+                      "name": "age_group_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "age_group",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0fa818c9716a599bc1b9658611f6a_age_group"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Number of orders by customer age"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "top-10-customer-by-sales",
+            "queries": [
+              {
+                "name": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0fa81f22f1239b421b1d91ff01583_customer_number",
+                "query": {
+                  "datasetName": "580e4ce2",
+                  "fields": [
+                    {
+                      "name": "customer_number",
+                      "expression": "`customer_number`"
+                    },
+                    {
+                      "name": "customer_number_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "customer_number",
+                    "queryName": "dashboards/01f0f90d734e1bf1af8819be009e1ee0/datasets/01f0fa81f22f1239b421b1d91ff01583_customer_number"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Top 10 customer by sales"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 7,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "6fbdfc56",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "847a6b46",
+                  "fields": [
+                    {
+                      "name": "sum(total_numbers_of_customer)",
+                      "expression": "SUM(`total_numbers_of_customer`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_numbers_of_customer)"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#33006F"
+              },
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 2,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "a09da172",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "c114f7e0",
+                  "fields": [
+                    {
+                      "name": "avg_sales",
+                      "expression": "`avg_sales`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg_sales"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#33006F"
+              },
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 3,
+            "width": 2,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "bbb7d65f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "1b96f680",
+                  "fields": [
+                    {
+                      "name": "sum(count(DISTINCT order_number))",
+                      "expression": "SUM(`count(DISTINCT order_number)`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(count(DISTINCT order_number))"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#33006F"
+              },
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 3,
+            "width": 2,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "958badbe",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 21px;\">**Number of Customers**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#1C476A"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "179b6044",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size:21px\">**Average Sales Per Customer**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#1C476A"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "878cefad",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size:22px\">**Number Of Orders**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "dark": "#1C476A"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "fad5a305",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "916fbf33",
+                  "fields": [
+                    {
+                      "name": "customer_tier",
+                      "expression": "`customer_tier`"
+                    },
+                    {
+                      "name": "sum(number_of_customer)",
+                      "expression": "SUM(`number_of_customer`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "customer_tier",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(number_of_customer)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "title": "Number Of Customer Segmentation By Spending",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "413bdb9f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "916fbf33",
+                  "fields": [
+                    {
+                      "name": "sum(number_of_customer)",
+                      "expression": "SUM(`number_of_customer`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(number_of_customer)"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 20,
+            "width": 3,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "3c5ba43c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3b3b8d6e",
+                  "fields": [
+                    {
+                      "name": "country",
+                      "expression": "`country`"
+                    },
+                    {
+                      "name": "sum(total_sales)",
+                      "expression": "SUM(`total_sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "country",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_sales)",
+                  "displayName": "total_sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "title": "Country Product Sales",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 14,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "b6d8fcef",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "3b3b8d6e",
+                  "fields": [
+                    {
+                      "name": "sum(total_sales)",
+                      "expression": "SUM(`total_sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(total_sales)"
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBorderColor": {
+                "dark": "#FFFFFF"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 20,
+            "width": 3,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#FFFFFF",
+        "dark": "#11171C"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FFFFFF",
+        "dark": "#11171C"
+      },
+      "widgetBorderColor": {
+        "light": "#FFFFFF",
+        "dark": "#11171C"
+      },
+      "fontColor": {
+        "light": "#11171C",
+        "dark": "#E8ECF0"
+      },
+      "selectionColor": {
+        "light": "#2272B4",
+        "dark": "#8ACAFF"
+      },
+      "visualizationColors": [
+        "#077A9D",
+        "#FFAB00",
+        "#00A972",
+        "#FF3621",
+        "#8BCAE7",
+        "#AB4057",
+        "#99DDB4",
+        "#FCA4A1",
+        "#919191",
+        "#BF7080"
+      ],
+      "widgetHeaderAlignment": "LEFT"
+    },
+    "applyModeEnabled": false
+  }
+}
