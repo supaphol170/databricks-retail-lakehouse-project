@@ -20,9 +20,14 @@ This project demonstrates a real-world **Data Analytics** workflow using the **D
 * **AI Integration:** Enabled non-technical users to query data via Databricks Genie.
 
 ## 📷 Screenshots
+  * **Sales Dashboard**
 ![images](images/sales_kpi.png)
 ![images](images/sales-product-over-time.png)
 ![images](images/sales-monthly-revenue.png)
+  * **Customers Dashboard**
+![images](images/Customer_product_KPI.png)
+![images](images/Customer_product_age_top10.png)
+![images](images/Customer_product_segment_sales.png)
 
 ## 📜 Credits & License
 This project is based on the **Databricks Data Lakehouse Project** by **Data With Baraa**.
