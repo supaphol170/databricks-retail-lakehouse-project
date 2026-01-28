@@ -417,12 +417,12 @@
                       "expression": "`order_dates`"
                     },
                     {
-                      "name": "total_prices",
-                      "expression": "`total_prices`"
-                    },
-                    {
                       "name": "total_cost",
                       "expression": "`total_cost`"
+                    },
+                    {
+                      "name": "total_prices",
+                      "expression": "`total_prices`"
                     }
                   ],
                   "disaggregated": true
@@ -440,17 +440,17 @@
                   }
                 },
                 "y": {
-                  "fields": [
-                    {
-                      "fieldName": "total_prices"
-                    },
-                    {
-                      "fieldName": "total_cost"
-                    }
-                  ],
                   "scale": {
                     "type": "quantitative"
-                  }
+                  },
+                  "fields": [
+                    {
+                      "fieldName": "total_cost"
+                    },
+                    {
+                      "fieldName": "total_prices"
+                    }
+                  ]
                 }
               },
               "frame": {
@@ -1351,12 +1351,12 @@
                   "datasetName": "580e4ce2",
                   "fields": [
                     {
-                      "name": "total_sales",
-                      "expression": "`total_sales`"
-                    },
-                    {
                       "name": "customer_number",
                       "expression": "`customer_number`"
+                    },
+                    {
+                      "name": "total_sales",
+                      "expression": "`total_sales`"
                     }
                   ],
                   "disaggregated": true
@@ -1365,26 +1365,23 @@
             ],
             "spec": {
               "version": 3,
-              "widgetType": "pie",
+              "widgetType": "bar",
               "encodings": {
-                "angle": {
-                  "fieldName": "total_sales",
-                  "scale": {
-                    "type": "quantitative"
-                  }
-                },
-                "color": {
+                "x": {
                   "fieldName": "customer_number",
                   "scale": {
                     "type": "categorical"
                   }
                 },
+                "y": {
+                  "fieldName": "total_sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
                 "label": {
                   "show": true
                 }
-              },
-              "mark": {
-                "layout": "stack"
               },
               "frame": {
                 "title": "Top 10 customer by sales",
@@ -1802,13 +1799,35 @@
                 "x": {
                   "fieldName": "customer_tier",
                   "scale": {
-                    "type": "categorical"
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "VIP BRONZE",
+                        "VIP SILVER",
+                        "VIP GOLD",
+                        "VIP PLATINUM"
+                      ]
+                    }
                   }
                 },
                 "y": {
                   "fieldName": "sum(number_of_customer)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    },
+                    "hideGroupSeparator": false
+                  },
+                  "axis": {
+                    "labelAngle": 45
+                  },
                   "scale": {
-                    "type": "quantitative"
+                    "type": "quantitative",
+                    "reverse": false
                   }
                 },
                 "label": {
