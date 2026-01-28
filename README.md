@@ -23,7 +23,7 @@ This project demonstrates a real-world **Data Analytics** workflow using the **D
   * **Sales Dashboard**
 ![images](images/sales_kpi.png)
 ![images](images/sales-product-over-time.png)
-![images](images/sales-monthly-revenue.png)
+![images](images/sales_monthly_revenue.png)
   * **Customers Dashboard**
 ![images](images/Customer_product_KPI.png)
 ![images](images/Customer_product_age_top10.png)
