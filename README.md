@@ -19,7 +19,7 @@ This project demonstrates a real-world **Data Analytics** workflow using the **D
 * **Customer Behavior:** Top 10 customers analysis and segmentation by age group.
 * **AI Integration:** Enabled non-technical users to query data via Databricks Genie.
 
-## 📷 Screenshots
+## 📷 Dashboard Screenshots
   * **Sales Dashboard**
 ![images](images/sales_kpi.png)
 ![images](images/sales-product-over-time.png)
@@ -28,6 +28,9 @@ This project demonstrates a real-world **Data Analytics** workflow using the **D
 ![images](images/Customer_product_KPI.png)
 ![images](images/Customer_product_age_top10.png)
 ![images](images/Customer_product_segment_sales.png)
+
+## Architecture Diagram
+![images](images/architecture_diagram.png)
 
 ## 📜 Credits & License
 This project is based on the **Databricks Data Lakehouse Project** by **Data With Baraa**.
