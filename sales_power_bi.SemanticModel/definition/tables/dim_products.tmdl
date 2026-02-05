@@ -1,0 +1,119 @@
+table dim_products
+	lineageTag: ffac73bb-50f0-457d-b5a5-056aac99848a
+
+	column product_key
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 15d51332-14c8-42d1-9bae-66ee0c928621
+		summarizeBy: none
+		sourceColumn: product_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_id
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 93a64902-87f2-4b7b-83a7-65aba3a5ed6a
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_number
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 53389743-25d5-454e-97e3-a9aa6a3ebaeb
+		summarizeBy: none
+		sourceColumn: product_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_name
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 16b3a634-7ad9-474d-868b-6277cd951dfe
+		summarizeBy: none
+		sourceColumn: product_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column category_id
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 059e0570-8c63-45c8-a934-2baf68a93623
+		summarizeBy: none
+		sourceColumn: category_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: fb9a0134-8a6a-48bb-a080-9963665665af
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column subcategory
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: b8658dd7-9138-491b-b56f-3ae2e29dd752
+		summarizeBy: none
+		sourceColumn: subcategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column maintenance
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 7651fb1e-49c8-4692-8f03-ee573fac474c
+		summarizeBy: none
+		sourceColumn: maintenance
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 5ebef27b-c9e5-41df-8f00-d729cb0e5f86
+		summarizeBy: none
+		sourceColumn: cost
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_line
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 978b5562-9bcf-44b2-8c2c-9ee2bbdc5b44
+		summarizeBy: none
+		sourceColumn: product_line
+
+		annotation SummarizationSetBy = Automatic
+
+	column start_date
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: a6bbb375-21a1-4338-9321-4f7bd31cc833
+		summarizeBy: none
+		sourceColumn: start_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition dim_products = m
+		mode: directQuery
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs("dbc-458a1273-b8ba.cloud.databricks.com", "/sql/1.0/warehouses/127ee04a7a01db03", [Catalog = "", Database = ""]),
+				    workspace_Database = Source{[Name="workspace",Kind="Database"]}[Data],
+				    salesdb_Schema = workspace_Database{[Name="salesdb",Kind="Schema"]}[Data],
+				    dim_products_Table = salesdb_Schema{[Name="dim_products",Kind="Table"]}[Data]
+				in
+				    dim_products_Table
+

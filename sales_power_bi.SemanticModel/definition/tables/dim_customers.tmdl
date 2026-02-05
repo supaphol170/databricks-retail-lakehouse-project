@@ -1,0 +1,138 @@
+table dim_customers
+	lineageTag: 9e5da5a7-6017-485c-af97-bf0eadb71fe0
+
+	column customer_key
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 9d5e0207-4a76-437f-be51-7949f16e8bd7
+		summarizeBy: none
+		sourceColumn: customer_key
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_id
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 4e391108-806e-4fee-b1fa-5157f5d0d238
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_number
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: c42d6e87-cce3-479d-8ed6-e4ad1ee2943d
+		summarizeBy: none
+		sourceColumn: customer_number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_name
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 8b90564e-2284-419a-b679-b537ecfc0069
+		summarizeBy: none
+		sourceColumn: first_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_name
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 595a6830-989f-46ca-adc2-aac92b7173d7
+		summarizeBy: none
+		sourceColumn: last_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column country
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 8d64121b-ee58-429b-8126-e83d5282fbbc
+		summarizeBy: none
+		sourceColumn: country
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column marital_status
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: d7aa0bf1-ad92-4f9b-8b86-aaf24d2198ce
+		summarizeBy: none
+		sourceColumn: marital_status
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column gender
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 44941a5d-2c66-43d3-a24b-bdbb77d64c3a
+		summarizeBy: none
+		sourceColumn: gender
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column birthdate
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: a210ef89-03f5-4cce-9a52-cc5c01b532db
+		summarizeBy: none
+		sourceColumn: birthdate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column create_date
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: 4385c6da-1050-4fb0-a9cd-44dfbf11e739
+		summarizeBy: none
+		sourceColumn: create_date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition dim_customers = m
+		mode: dual
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs("dbc-458a1273-b8ba.cloud.databricks.com", "/sql/1.0/warehouses/127ee04a7a01db03", [Catalog = "", Database = ""]),
+				    workspace_Database = Source{[Name="workspace",Kind="Database"]}[Data],
+				    salesdb_Schema = workspace_Database{[Name="salesdb",Kind="Schema"]}[Data],
+				    dim_customers_Table = salesdb_Schema{[Name="dim_customers",Kind="Table"]}[Data]
+				in
+				    dim_customers_Table
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

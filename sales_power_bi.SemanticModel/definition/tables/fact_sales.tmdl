@@ -1,0 +1,158 @@
+table fact_sales
+	lineageTag: 880378c8-e1c7-4291-acb7-3e83b7200e74
+
+	measure 'Total Profit' =
+			SUMX(
+			    fact_sales,
+			    fact_sales[sales_amount]-(fact_sales[quantity] * RELATED(dim_products[cost]))
+			)
+		formatString: 0
+		lineageTag: e40dcddd-ab1b-42dd-8e19-a67be6c176b2
+
+	measure 'Total Costs' = ```
+			SUMX(fact_sales, fact_sales[quantity] * RELATED(dim_products[cost])) 
+			```
+		formatString: 0
+		lineageTag: cadab3d0-165c-4180-aef9-25a9d1f82a92
+
+	measure avg_revenue_per_user = SUM(fact_sales[sales_amount])/DISTINCTCOUNT(fact_sales[customer_key])
+		lineageTag: 151bcd29-a2f2-4030-a440-5c363c2817fd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column order_number
+		dataType: string
+		sourceProviderType: nvarchar(65535)
+		lineageTag: 85834d15-130d-4fda-8b4d-cca3f9fddc69
+		summarizeBy: none
+		sourceColumn: order_number
+
+		annotation SummarizationSetBy = Automatic
+
+	column product_key
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 14463506-1584-4f03-8008-41df4cfafb5a
+		summarizeBy: none
+		sourceColumn: product_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column customer_key
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 239154d8-efa4-470f-a3bb-aaa5be51a3de
+		summarizeBy: none
+		sourceColumn: customer_key
+
+		annotation SummarizationSetBy = Automatic
+
+	column order_date
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: 68ea81f9-5ad1-4fdf-8466-6783270f67c9
+		summarizeBy: none
+		sourceColumn: order_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column shipping_date
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: d895a95d-c72e-4144-b9fe-f05bb15eb182
+		summarizeBy: none
+		sourceColumn: shipping_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column due_date
+		dataType: dateTime
+		formatString: Long Date
+		sourceProviderType: date
+		lineageTag: fa9b73be-2442-4e04-85ec-1bc0666f802b
+		summarizeBy: none
+		sourceColumn: due_date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column sales_amount
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 51420d00-2ee0-455a-aafb-a978ce83da59
+		summarizeBy: sum
+		sourceColumn: sales_amount
+
+		annotation SummarizationSetBy = Automatic
+
+	column quantity
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: c0803540-cd3d-4f7e-a0a4-973ee8077a9a
+		summarizeBy: sum
+		sourceColumn: quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column price
+		dataType: int64
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: ff25368b-9ca9-44bd-9daf-bb3dc11b4cd3
+		summarizeBy: sum
+		sourceColumn: price
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 62d750b5-e87b-4dd9-b9c4-13efc207a139
+		summarizeBy: sum
+		sourceColumn: Month
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		isNullable: false
+		formatString: 0
+		sourceProviderType: bigint
+		lineageTag: 37489ecd-8cab-4d38-9077-d6212ebb1f41
+		summarizeBy: sum
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fact_sales = m
+		mode: directQuery
+		source =
+				let
+				    Source = DatabricksMultiCloud.Catalogs("dbc-458a1273-b8ba.cloud.databricks.com", "/sql/1.0/warehouses/127ee04a7a01db03", [Catalog = "", Database = ""]),
+				    workspace_Database = Source{[Name="workspace",Kind="Database"]}[Data],
+				    salesdb_Schema = workspace_Database{[Name="salesdb",Kind="Schema"]}[Data],
+				    fact_sales_Table = salesdb_Schema{[Name="fact_sales",Kind="Table"]}[Data],
+				    #"Inserted Month" = Table.AddColumn(fact_sales_Table, "Month", each Date.Month([order_date]), Int64.Type),
+				    #"Renamed Columns" = Table.RenameColumns(#"Inserted Month",{{"Month", "Month_Year"}}),
+				    #"Inserted Year" = Table.AddColumn(#"Renamed Columns", "Year", each Date.Year([order_date]), Int64.Type),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Inserted Year",{{"Month_Year", "Month"}})
+				in
+				    #"Renamed Columns1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
